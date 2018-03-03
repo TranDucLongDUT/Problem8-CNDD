@@ -26,13 +26,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     TextView txtNgayHT,txtGioHT;
     EditText edtCongViec,edtNoiDung;
-    Button btnDate,btnTime,btnAdd;
+    Button btnDate,btnTime,btnAdd, btnUpdate, btnReset;
     Date gioHT,ngayHT;
     ListView listView;
     ArrayList<JobInWeekModel> arrayJob = new ArrayList<>();
     ArrayAdapter arrayAdapter = null;
     Calendar calendar;
     SimpleDateFormat dinhDangNgay, dinhDangGio;
+    int index=-1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         btnDate = findViewById(R.id.btnDate);
         btnTime = findViewById(R.id.btnTime);
         btnAdd = findViewById(R.id.btnThem);
+        btnUpdate = findViewById(R.id.btnCapNhat);
+        btnReset = findViewById(R.id.btnReset);
         listView = findViewById(R.id.lvDanhSach);
     }
 
@@ -69,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
         btnDate.setOnClickListener(new ButtonEvents());
         btnTime.setOnClickListener(new ButtonEvents());
         btnAdd.setOnClickListener(new ButtonEvents());
+        btnUpdate.setOnClickListener(new ButtonEvents());
+        btnReset.setOnClickListener(new ButtonEvents());
         listView.setOnItemClickListener(new ListViewEvents());
         listView.setOnItemLongClickListener(new ListViewEvents());
     }
@@ -94,6 +99,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 }
+                case R.id.btnCapNhat: {
+                    editWork();
+                    break;
+                }
+                case R.id.btnReset: {
+                    edtCongViec.setText("");
+                    edtNoiDung.setText("");
+                    calendar=Calendar.getInstance();
+                    txtNgayHT.setText(dinhDangNgay.format(calendar.getTime()));
+                    txtGioHT.setText(dinhDangGio.format(calendar.getTime()));
+                    break;
+                }
+
             }
         }
     }
@@ -143,10 +161,27 @@ public class MainActivity extends AppCompatActivity {
         edtCongViec.requestFocus();
     }
 
+    public void editWork() {
+        String congViec = edtCongViec.getText()+"";
+        String noiDung = edtNoiDung.getText()+"";
+        JobInWeekModel mJobInWeek = new JobInWeekModel(congViec,noiDung,ngayHT,gioHT);
+        arrayJob.set(index,mJobInWeek );
+        arrayAdapter.notifyDataSetChanged();
+        //reset and set focus
+        edtCongViec.setText("");
+        edtNoiDung.setText("");
+        edtCongViec.requestFocus();
+    }
+
     private class ListViewEvents implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            index = position;
+            edtCongViec.setText(arrayJob.get(position).getTenCongViec());
+            edtNoiDung.setText(arrayJob.get(position).getNoiDungCongViec());
+            txtNgayHT.setText(dinhDangNgay.format(arrayJob.get(position).getNgayHT()));
+            txtGioHT.setText(dinhDangGio.format(arrayJob.get(position).getGioHT()));
             Toast.makeText(MainActivity.this,arrayJob.get(position).getNoiDungCongViec(),Toast.LENGTH_LONG).show();
         }
 
