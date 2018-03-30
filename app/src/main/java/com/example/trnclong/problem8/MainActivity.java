@@ -2,6 +2,8 @@ package com.example.trnclong.problem8;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -27,9 +30,12 @@ public class MainActivity extends AppCompatActivity {
     TextView txtNgayHT,txtGioHT;
     EditText edtCongViec,edtNoiDung;
     Button btnDate,btnTime,btnAdd, btnUpdate, btnReset;
+    Spinner spinner;
     Date gioHT,ngayHT;
     ListView listView;
     ArrayList<JobInWeekModel> arrayJob = new ArrayList<>();
+    ArrayList<String> arrayType = new ArrayList<>();
+    ArrayAdapter arrayAdapterType ;
     ArrayAdapter arrayAdapter = null;
     Calendar calendar;
     SimpleDateFormat dinhDangNgay, dinhDangGio;
@@ -44,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         addEvents();
         arrayAdapter = new ArrayAdapter<JobInWeekModel>(MainActivity.this,android.R.layout.simple_list_item_1, arrayJob);
         listView.setAdapter(arrayAdapter);
+        arrayAdapterType = new ArrayAdapter<>(MainActivity.this,android.R.layout.simple_spinner_dropdown_item,arrayType);
+        spinner.setAdapter(arrayAdapterType);
     }
 
     private void initialSetup() {
@@ -53,6 +61,13 @@ public class MainActivity extends AppCompatActivity {
         txtGioHT.setText(dinhDangGio.format(calendar.getTime()));
         ngayHT=calendar.getTime();
         gioHT=calendar.getTime();
+        arrayType.add("Công việc");
+        arrayType.add("Trông con");
+        arrayType.add("Nấu ăn");
+        arrayType.add("Tắm rửa");
+        arrayType.add("Đi chơi");
+        arrayType.add("Hẹn hò");
+        arrayType.add("Phượt");
     }
 
     private void addControls() {
@@ -66,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         btnUpdate = findViewById(R.id.btnCapNhat);
         btnReset = findViewById(R.id.btnReset);
         listView = findViewById(R.id.lvDanhSach);
+        spinner = findViewById(R.id.spinner_type);
     }
 
     private void addEvents() {
@@ -152,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
     public void addJob() {
         String congViec = edtCongViec.getText()+"";
         String noiDung = edtNoiDung.getText()+"";
-        JobInWeekModel mJobInWeek = new JobInWeekModel(congViec,noiDung,ngayHT,gioHT);
+        String theLoai = spinner.getSelectedItem().toString();
+        JobInWeekModel mJobInWeek = new JobInWeekModel(congViec,theLoai,noiDung,ngayHT,gioHT);
         arrayJob.add(mJobInWeek);
         arrayAdapter.notifyDataSetChanged();
         //reset and set focus
@@ -164,7 +181,8 @@ public class MainActivity extends AppCompatActivity {
     public void editWork() {
         String congViec = edtCongViec.getText()+"";
         String noiDung = edtNoiDung.getText()+"";
-        JobInWeekModel mJobInWeek = new JobInWeekModel(congViec,noiDung,ngayHT,gioHT);
+        String theLoai = spinner.getSelectedItem().toString();
+        JobInWeekModel mJobInWeek = new JobInWeekModel(congViec,theLoai,noiDung,ngayHT,gioHT);
         arrayJob.set(index,mJobInWeek );
         arrayAdapter.notifyDataSetChanged();
         //reset and set focus
@@ -186,10 +204,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            arrayJob.remove(position);
-            arrayAdapter.notifyDataSetChanged();
+        public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+            showAlerDialog(position);
             return false;
         }
+    }
+
+    public void showAlerDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("Are you sure to delete ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("No ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                arrayJob.remove(position);
+                arrayAdapter.notifyDataSetChanged();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

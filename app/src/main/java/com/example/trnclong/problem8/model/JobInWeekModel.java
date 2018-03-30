@@ -10,6 +10,7 @@ import java.util.Locale;
 
 public class JobInWeekModel {
     private String tenCongViec;
+    private String theLoaiCongViec;
     private String noiDungCongViec;
     private Date ngayHT;
     private Date gioHT;
@@ -17,8 +18,11 @@ public class JobInWeekModel {
     public JobInWeekModel() {
     }
 
-    public JobInWeekModel(String tenCongViec, String noiDungCongViec, Date ngayHT, Date gioHT) {
+
+    public JobInWeekModel(String tenCongViec, String theLoaiCongViec, String noiDungCongViec, Date ngayHT, Date gioHT) {
         this.tenCongViec = tenCongViec;
+        this.theLoaiCongViec = theLoaiCongViec;
+
         this.noiDungCongViec = noiDungCongViec;
         this.ngayHT = ngayHT;
         this.gioHT = gioHT;
@@ -32,6 +36,13 @@ public class JobInWeekModel {
         this.tenCongViec = tenCongViec;
     }
 
+    public String getTheLoaiCongViec() {
+        return theLoaiCongViec;
+    }
+
+    public void setTheLoaiCongViec(String theLoaiCongViec) {
+        this.theLoaiCongViec = theLoaiCongViec;
+    }
     public String getNoiDungCongViec() {
         return noiDungCongViec;
     }
@@ -69,7 +80,7 @@ public class JobInWeekModel {
     }
     @Override
     public String toString() {
-        return this.tenCongViec+" - "+ getDateFormat(this.ngayHT)+" - "+ getHourFormat(this.gioHT);
+        return this.tenCongViec+" - "+  this.theLoaiCongViec+" - "+ getDateFormat(this.ngayHT)+" - "+ getHourFormat(this.gioHT);
     }
 
 }
